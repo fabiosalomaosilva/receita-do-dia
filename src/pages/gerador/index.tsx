@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Keyboard, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Keyboard,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { Text } from "../../components/inputs/Text";
 import { getReceita } from "../../services/gptService";
 import Input from "../../components/inputs/Input";
@@ -39,6 +45,7 @@ export default function Gerador() {
         <Input value={ingrediente} onChangeText={setIngrediente} />
         <Button text="Adicionar" onPress={addIngrediente} color="primary" />
       </View>
+
       <View style={styles.cardInsert}>
         <Text>Ingredientes &#129367;</Text>
         {ingredientes &&
@@ -55,6 +62,24 @@ export default function Gerador() {
               </Text>
             </View>
           ))}
+
+        {ingredientes.length > 0 && (
+          <Button
+            color="primary"
+            onPress={createRecipe}
+            icon={<Ionicons name="search-sharp" size={22} color="#fff" />}
+            iconPosition="left"
+            text="Criar Receita"
+          />
+        )}
+      </View>
+
+      <View style={styles.cardInsert}>
+        {loading && <ActivityIndicator size="large" color="#f59e0b" />}
+        <Text style={{ marginBotton: 10, fontSize: 18 }}>
+          Receita &#127858;
+        </Text>
+        <Text>{receita}</Text>
       </View>
     </ScrollView>
   );

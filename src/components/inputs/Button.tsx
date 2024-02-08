@@ -5,6 +5,9 @@ export interface InputProps {
   text?: string;
   color: "primary" | "secondary" | "danger";
   disabled?: boolean;
+  iconPosition?: "left" | "right";
+  icon?: React.ReactElement;
+
   onPress?: (e: any) => void;
 }
 export default function Button(props: InputProps) {
@@ -28,7 +31,9 @@ export default function Button(props: InputProps) {
         onPress={props.onPress}
         disabled={props.disabled}
       >
+        {props.iconPosition === "left" && props.icon}
         <Text style={styles.textButton}>{props.text}</Text>
+        {props.iconPosition === "right" && props.icon}
       </TouchableOpacity>
     </View>
   );

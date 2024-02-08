@@ -27,18 +27,6 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="dark" translucent backgroundColor="transparent" />
       <Routes />
-      <View>
-        <Text
-          style={{
-            color: "#475569",
-            fontSize: 30,
-            fontFamily: "Nunito-Bold",
-            margin: 20,
-          }}
-        >
-          Hello World
-        </Text>
-      </View>
     </GestureHandlerRootView>
   );
 }
