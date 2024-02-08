@@ -24,7 +24,6 @@ export default function Login() {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
-  // Handle user state changes
   function onAuthStateChanged(user) {
     setUser(user);
     if (initializing) setInitializing(false);

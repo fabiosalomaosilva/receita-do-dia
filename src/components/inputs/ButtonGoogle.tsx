@@ -6,8 +6,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function ButtonGoogle() {
   GoogleSignin.configure({
-    webClientId:
-      "369039046664-5esk8e8ckltofad49h61mitm1eks6lp5.apps.googleusercontent.com",
+    webClientId: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
   });
 
   async function onGoogleButtonPress() {
