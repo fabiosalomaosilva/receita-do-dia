@@ -5,7 +5,7 @@ import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import auth from "@react-native-firebase/auth";
 import { FontAwesome6, SimpleLineIcons } from "@expo/vector-icons";
 import Button from "../../inputs/Button";
-import Text from "../../inputs/Text";
+import { Text } from "../../inputs/Text";
 import Avatar from "../avatar";
 
 export default function Header() {

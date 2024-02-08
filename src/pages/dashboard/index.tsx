@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Text from "../../components/inputs/Text";
+import { Text } from "../../components/inputs/Text";
 import auth from "@react-native-firebase/auth";
 import Button from "../../components/inputs/Button";
 import { SafeAreaView } from "react-native-safe-area-context";
