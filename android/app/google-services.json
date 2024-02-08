@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "369039046664",
+    "project_id": "receita-dia",
+    "storage_bucket": "receita-dia.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:369039046664:android:a913e20cfa7ba1f13ab9bd",
+        "android_client_info": {
+          "package_name": "com.receitadodia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "369039046664-g9k1nfdq8pr367u4fodck6btjutj486k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.receitadodia",
+            "certificate_hash": "8b5dc6214454a0cee1489373c8a49a87d3300ddd"
+          }
+        },
+        {
+          "client_id": "369039046664-5esk8e8ckltofad49h61mitm1eks6lp5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCO6SOQ_k4iv5MlxEpwBvSzMm1zhS-vgmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "369039046664-5esk8e8ckltofad49h61mitm1eks6lp5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "369039046664-fpqlh820e9frlncs9morqf40he4opa8q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.receitadodia"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
