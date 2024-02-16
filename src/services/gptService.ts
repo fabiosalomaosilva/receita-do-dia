@@ -1,11 +1,13 @@
 import axios from "axios";
+import { Receita } from "../models/receita";
 
 export async function getReceita(ingredientes: string[]) {
   const prompt = `Crie uma receita com os ingredientes que possuo na minha casa. 
   Lista de ingredientes ${ingredientes.join(" - ")}. 
-  Mostre o nome da receita (Não precisa imprimir o label como "Receita:" ou "Nome da receita:").
-  Os ingredientes em tópicos.
-  O modo de preparo em uma lista numerada.`;
+  O retorno deve ser no formato JSON com os seguintes dados: {nome: string, ingredientes: string[], modoPreparo: string[] }
+  Mostre o nome da receita (Não precisa imprimir o label como "Receita:" ou "Nome da receita:") retornado no campo 'nome' do JSON.
+  Os ingredientes em um array retornado no campo 'ingredientes' do JSON.
+  O modo de preparo em um array retornado no campo 'modoPreparo' do JSON.`;
   const data = {
     model: "gpt-3.5-turbo",
     messages: [
@@ -20,14 +22,15 @@ export async function getReceita(ingredientes: string[]) {
   };
   const headers = {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${"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"}`,
+    Authorization: `Bearer ${process.env.EXPO_PUBLIC_OPENAI_KEY}`,
   };
   try {
     const uri = "https://api.openai.com/v1/chat/completions";
     const response = await axios.post(uri, data, { headers });
-    return response.data.choices[0].message.content;
+    const receita: Receita = JSON.parse(response.data.choices[0].message.content);
+    return receita;
   } catch (error) {
     console.log("error", error);
-    return "Não foi possível criar a receita";
+    return null;
   }
 }

@@ -40,24 +40,18 @@ export default function Login() {
     if (!email && !password) return;
     setLoading(true);
 
-    auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(() => {
-        console.log("User account created & signed in!");
-      })
-      .catch((error) => {
-        if (error.code === "auth/email-already-in-use") {
-          console.log("That email address is already in use!");
-        }
+    try {
+      const result = await auth().signInWithEmailAndPassword(email, password);
+      console.log(user)
+      setLoading(false);
 
-        if (error.code === "auth/invalid-email") {
-          console.log("That email address is invalid!");
-        }
-        console.error(error);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    }
+    catch (error) {
+      console.log(error)
+      setLoading(false);
+      Alert.alert("Erro no login", error)
+    }
+
   }
 
   return (

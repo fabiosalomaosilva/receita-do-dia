@@ -22,7 +22,7 @@ export function Routes() {
 
   return (
     <NavigationContainer>
-      {user ? <Generator /> : <AuthRoutes />}
+      {user ? <DashboardRoutes /> : <AuthRoutes />}
       {/* <AuthRoutes /> */}
     </NavigationContainer>
   );

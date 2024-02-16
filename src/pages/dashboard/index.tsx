@@ -1,9 +1,8 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ScrollView, SafeAreaView, Image } from "react-native";
 import { Text } from "../../components/inputs/Text";
 import auth from "@react-native-firebase/auth";
 import Button from "../../components/inputs/Button";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../../components/layout/header";
 
 export default function Dashboard() {
@@ -13,30 +12,37 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
-      <Text style={styles.title}>Olá, Fábio</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <Header text="Dashboard" />
+        <Text style={styles.title}>Olá, Fábio</Text>
 
-      <Text style={styles.cardTitle}>Receitas &#127858;</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={styles.cardTitle}>Receitas</Text>
+          <Image source={require("../../../assets/ingredientes.png")} style={{ width: 40, height: 40 }} />
+        </View>
 
-      <View style={styles.cardRecipes}>
-        <Text style={styles.cardText}>Nenhuma receita gerada!</Text>
-      </View>
+        <View style={styles.cardRecipes}>
+          <Text style={styles.cardText}>Nenhuma receita salva!</Text>
+        </View>
 
-      <View style={styles.cardPrimary}>
-        <Text style={styles.cardText}>Nenhum receita gerada!</Text>
-      </View>
+        <View style={styles.cardPrimary}>
+          <Text style={styles.cardText}>Receita do dia!</Text>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    margin: 20,
+    padding: 20,
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'flex-start'
   },
   title: {
     fontSize: 24,
     fontFamily: "Nunito_700Bold",
-    marginTop: 15,
     color: "#475569",
   },
   cardTitle: {

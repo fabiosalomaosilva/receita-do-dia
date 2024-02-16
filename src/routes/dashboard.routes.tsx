@@ -22,8 +22,28 @@ export function DashboardRoutes() {
           ),
         }}
       />
-      <Tab.Screen name="Gerador" component={Gerador} />
-      <Tab.Screen name="Receitas" component={Receitas} />
+      <Tab.Screen
+        name="Gerador"
+        component={Gerador}
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome6 name="bolt" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Receitas"
+        component={Receitas}
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome6 name="lightbulb" color={color} size={size} />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 }

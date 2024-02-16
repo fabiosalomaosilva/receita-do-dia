@@ -1,37 +1,39 @@
 import React from "react";
-import { View, Image, StyleSheet } from "react-native";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import clsx from "clsx";
+import { View, Image, ImageProps, StyleSheet } from "react-native";
+import AvatarMenu from "../avatarMenu";
 
-export interface AvatarProps {
-  imageUrl: string | null;
+type AvatarProps = ImageProps & {
+  size?: "small" | "medium" | "large";
 }
 
 export default function Avatar(props: AvatarProps) {
+  const avatarStyle = styles[props.size || 'medium'];
+  const defaultAvatarSource = require("../../../../assets/avatar.png");
+
   return (
-    <View style={styles.container}>
-      {props.imageUrl === null ? (
-        <Image
-          source={require("../../../../assets/avatar.png")}
-          resizeMode="contain"
-          style={styles.avatar}
-        />
-      ) : (
-        <Image source={{ uri: props.imageUrl }} style={styles.avatar} />
-      )}
-    </View>
+    <Image
+      source={props.source || defaultAvatarSource}
+      resizeMode="contain"
+      style={avatarStyle}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  large: {
+    width: 50,
+    height: 50,
+    borderRadius: 25
+  },
+  medium: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    overflow: "hidden",
+    borderRadius: 20
   },
-  avatar: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
+  small: {
+    width: 30,
+    height: 30,
+    borderRadius: 15
   },
 });

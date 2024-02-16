@@ -1,19 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
+const webClientId = process.env.EXPO_PUBLIC_FIREBASE_WEB_CLIENT_ID;
+
 export default function ButtonGoogle() {
   GoogleSignin.configure({
-    webClientId: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+    webClientId,
   });
 
   async function onGoogleButtonPress() {
-    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-    const { idToken } = await GoogleSignin.signIn();
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    return auth().signInWithCredential(googleCredential);
+    try {
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const { idToken } = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      return auth().signInWithCredential(googleCredential);
+    }
+    catch (error) {
+      Alert.alert("Erro de login", "Não foi possível logar com o Google")
+    }
   }
 
   return (
@@ -21,11 +28,7 @@ export default function ButtonGoogle() {
       <TouchableOpacity
         style={styles.button}
         activeOpacity={0.7}
-        onPress={async () =>
-          onGoogleButtonPress().then(() =>
-            console.log("Signed in with Google!")
-          )
-        }
+        onPress={onGoogleButtonPress}
       >
         <View style={styles.icone}>
           <Image

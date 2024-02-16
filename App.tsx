@@ -11,6 +11,7 @@ import {
   Nunito_600SemiBold,
   Nunito_700Bold,
 } from "@expo-google-fonts/nunito";
+import { MenuProvider } from "react-native-popup-menu";
 
 export default function App() {
   const [fontsLoaded, fontError] = useFonts({
@@ -26,7 +27,9 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar style="dark" translucent backgroundColor="transparent" />
-      <Routes />
+      <MenuProvider>
+        <Routes />
+      </MenuProvider>
     </GestureHandlerRootView>
   );
 }

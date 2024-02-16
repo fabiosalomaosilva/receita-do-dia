@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
+    flexDirection: 'row',
+    gap: 5,
     borderWidth: 0,
     fontSize: 16,
     flex: 1,
