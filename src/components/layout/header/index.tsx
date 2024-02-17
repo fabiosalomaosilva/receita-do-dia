@@ -8,6 +8,7 @@ import Button from "../../inputs/Button";
 import { Text } from "../../inputs/Text";
 import Avatar from "../avatar";
 import AvatarMenu from "../avatarMenu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export interface HeaderProps {
   text: string;
@@ -22,7 +23,8 @@ export default function Header(props: HeaderProps) {
     return subscriber;
   }, []);
 
-  function handleLogout() {
+  async function handleLogout() {
+    await AsyncStorage.removeItem('user');
     auth().signOut();
   }
 
@@ -56,12 +58,11 @@ export default function Header(props: HeaderProps) {
 const styles = StyleSheet.create({
   header: {
     width: "100%",
-    height: 60,
+    height: 50,
     flexDirection: "row",
     gap: 10,
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 15
   },
   avatar: {
     width: 100,
@@ -87,12 +88,12 @@ const styles = StyleSheet.create({
     gap: 1,
   },
   title: {
-    fontSize: 28,
+    fontSize: 24,
     color: "#475569",
   },
   titleIcon: {
     flexDirection: "row",
-    gap: 5,
+    gap: 10,
     height: 50,
     alignItems: "center",
   },

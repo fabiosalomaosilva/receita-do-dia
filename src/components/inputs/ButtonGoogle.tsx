@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
 import auth from "@react-native-firebase/auth";
+import firestore from '@react-native-firebase/firestore';
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { User } from "../../models/User";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const webClientId = process.env.EXPO_PUBLIC_FIREBASE_WEB_CLIENT_ID;
 
@@ -14,9 +17,23 @@ export default function ButtonGoogle() {
   async function onGoogleButtonPress() {
     try {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
-      const { idToken } = await GoogleSignin.signIn();
-      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-      return auth().signInWithCredential(googleCredential);
+      const result = await GoogleSignin.signIn();
+      const googleCredential = auth.GoogleAuthProvider.credential(result.idToken);
+      const authResult = auth().signInWithCredential(googleCredential);
+
+      const userLogin: User = {
+        displayName: result.user.name,
+        email: result.user.email,
+        photoUrl: result.user.photo,
+      }
+      const userDoc = await firestore().collection('users').doc(result.user.id).get();
+
+      if (!userDoc.exists) {
+        await firestore().collection('users').doc(result.user.id).set(userLogin);
+      }
+      userLogin.id = result.user.id;
+      await AsyncStorage.setItem('user', JSON.stringify(userLogin));
+      return authResult;
     }
     catch (error) {
       Alert.alert("Erro de login", "Não foi possível logar com o Google")

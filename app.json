@@ -3,9 +3,8 @@
     "name": "receita-do-dia",
     "slug": "receita-do-dia",
     "version": "1.0.0",
-    "scheme":"receitadodia",
+    "scheme": "receitadodia",
     "orientation": "portrait",
-    
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -21,16 +20,16 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       [
-      "expo-font",
-      {
-        "fonts": [
-          "node_modules/@expo-google-fonts/nunito/Nunito_400Regular.ttf",
-          "node_modules/@expo-google-fonts/nunito/Nunito_500Medium.ttf",
-          "node_modules/@expo-google-fonts/nunito/Nunito_600SemiBold.ttf",
-          "node_modules/@expo-google-fonts/nunito/Nunito_800Bold.ttf"
-        ]
-      }
-    ]
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/nunito/Nunito_400Regular.ttf",
+            "node_modules/@expo-google-fonts/nunito/Nunito_500Medium.ttf",
+            "node_modules/@expo-google-fonts/nunito/Nunito_600SemiBold.ttf",
+            "node_modules/@expo-google-fonts/nunito/Nunito_800Bold.ttf"
+          ]
+        }
+      ]
     ]
   }
 }

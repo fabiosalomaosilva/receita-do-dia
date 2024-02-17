@@ -31,7 +31,7 @@ export default function Login() {
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    return subscriber;
   }, []);
 
   if (initializing) return null;
@@ -42,7 +42,6 @@ export default function Login() {
 
     try {
       const result = await auth().signInWithEmailAndPassword(email, password);
-      console.log(user)
       setLoading(false);
 
     }

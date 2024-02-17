@@ -1,5 +1,4 @@
 import React from "react";
-import clsx from "clsx";
 import { View, Image, ImageProps, StyleSheet } from "react-native";
 import AvatarMenu from "../avatarMenu";
 

@@ -12,7 +12,7 @@ export default function Dashboard() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
         <Header text="Dashboard" />
         <Text style={styles.title}>Olá, Fábio</Text>
 
@@ -36,6 +36,7 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingTop: 0,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start'

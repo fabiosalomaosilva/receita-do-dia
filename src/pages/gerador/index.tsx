@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,7 +6,8 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
-  Image
+  Image,
+  Alert
 } from "react-native";
 import { Text } from "../../components/inputs/Text";
 import { getReceita } from "../../services/gptService";
@@ -15,13 +16,20 @@ import Button from "../../components/inputs/Button";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../../components/layout/header";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Receita } from "../../models/receita";
+import { Recipe } from "../../models/Recipe";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import firestore from '@react-native-firebase/firestore';
+import { User } from "../../models/User";
 
 export default function Gerador() {
   const [ingredientes, setIngredientes] = useState<string[]>([]);
   const [ingrediente, setIngrediente] = useState<string>("");
-  const [receita, setReceita] = useState<Receita>(null);
+  const [receita, setReceita] = useState<Recipe>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem('user').then((userLogin) => { console.log(userLogin) });
+  }, []);
 
   function addIngrediente() {
     if (ingrediente === "") return;
@@ -29,7 +37,6 @@ export default function Gerador() {
 
     setIngredientes([...ingredientes, ingrediente]);
     setIngrediente("");
-    console.log(ingredientes);
   }
 
   const removerIngrediente = (nome: string) => {
@@ -51,11 +58,29 @@ export default function Gerador() {
     setLoading(false);
   };
 
+  async function salvarReceita() {
+    try {
+      const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
+      console.log(userLogin);
+      const obj = {
+        nome: receita.nome,
+        user: firestore().collection('users').doc(userLogin.id),
+        ingredientes: receita.ingredientes,
+        modoPreparo: receita.modoPreparo,
+        createdAt: firestore.FieldValue.serverTimestamp()
+      }
+      await firestore().collection('recipes').add(obj);
+      Alert.alert("Salvar receita", "Receita salva com sucesso!");
+    }
+    catch (error) {
+      Alert.alert("Salvar receita", "Ocorreu um erro ao salvar a receita. Tente novamente.");
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
         <Header text="Criar receita" />
-        <Text style={styles.title}>Receita do dia</Text>
 
         <View style={styles.cardInsert}>
           <Text style={styles.cardText}>O que tenho em casa?</Text>
@@ -129,8 +154,8 @@ export default function Gerador() {
             </View>
 
             <View style={{ gap: 10, marginTop: 5, marginBottom: 5, justifyContent: 'space-between' }}>
-              <Button text="Salvar" color={"secondary"} />
-              <Button text="Excluir tudo" color={"danger"} onPress={excluirTudo} />
+              <Button text="Salvar" color={"secondary"} onPress={salvarReceita} icon={<Ionicons name="save" color="#f5f5f5" size={18} />} iconPosition="left" />
+              <Button text="Nova receita" color={"danger"} onPress={excluirTudo} icon={<Ionicons name="add" color="#f5f5f5" size={18} />} iconPosition="left" />
             </View>
           </View>
 
@@ -143,6 +168,7 @@ export default function Gerador() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    paddingTop: 0,
     flex: 1,
     flexDirection: 'column',
     alignItems: 'flex-start'
