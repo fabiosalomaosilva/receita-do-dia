@@ -1,13 +1,14 @@
+
 import React, { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, ScrollView, StyleSheet, FlatList } from "react-native";
+import { View, Text, SafeAreaView, ScrollView, StyleSheet, FlatList, TouchableOpacity, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import firestore from '@react-native-firebase/firestore';
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import Header from "../../components/layout/header";
 import { Recipe } from "../../models/Recipe";
 import { User } from "../../models/User";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import Avatar from "../../components/layout/avatar";
 
-export default function Receitas() {
+export default function Receitas({ navigation }) {
   const [receitas, setReceitas] = useState<Recipe[]>([]);
 
   useEffect(() => {
@@ -22,6 +23,7 @@ export default function Receitas() {
           const data = querySnapshot.docs.map(doc => {
             return {
               id: doc.id,
+              image: doc.data().categoria !== undefined ? "../../../assets/" + doc.data().categoria + ".png" : "../../../assets/outros.png",
               ...doc.data()
             } as Recipe;
           })
@@ -32,19 +34,36 @@ export default function Receitas() {
     return () => subscribe();
   }, []);
 
+  function handleOpenRecipe(receita: Recipe) {
+    receita.user = null;
+    navigation.navigate('Receita', { receita });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
+            <View style={{marginTop: 40}}>
+
         <Header text="Minhas receitas" />
-        <FlatList
+        <View style={styles.cardInsert}>
+  <FlatList
           data={receitas}
           renderItem={({ item }) => (
-            <View style={{ height: 30, flex: 1 }}>
-              <Text style={{ fontSize: 16 }}>{item.nome}</Text>
+            <View key={item.id}>
+              <TouchableOpacity onPress={() => handleOpenRecipe(item)}>
+                <View style={styles.btnItem}>
+                  <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
+                  <View style={{marginLeft: 10}}>
+                    <Text style={{ fontSize: 15 }}>{item.nome}</Text>
+                    <Text style={{ fontSize: 12 }}>{item.categoria}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
             </View>
           )}
         />
-      </ScrollView>
+              </View>
+
+      </View>
     </SafeAreaView>
   );
 }
@@ -61,4 +80,22 @@ const styles = StyleSheet.create({
     fontFamily: "Nunito_700Bold",
     color: "#475569",
   },
+  btnItem: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 10,
+    paddingTop: 7,
+    paddingBottom: 7,
+  },
+  cardInsert: {
+    width: "100%",
+    minHeight: 100,
+    backgroundColor: "#eaebed",
+    flexDirection: "column",
+    padding: 12,
+    borderRadius: 15,
+    marginBottom: 15,
+},
 });

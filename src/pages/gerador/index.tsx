@@ -61,15 +61,24 @@ export default function Gerador() {
   async function salvarReceita() {
     try {
       const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
-      console.log(userLogin);
       const obj = {
+        id: receita.id ?? null,
         nome: receita.nome,
         user: firestore().collection('users').doc(userLogin.id),
         ingredientes: receita.ingredientes,
         modoPreparo: receita.modoPreparo,
+        rendimento: receita.rendimento,
+        tempoPreparo: receita.tempoPreparo,
+        categoria: receita.categoria,
         createdAt: firestore.FieldValue.serverTimestamp()
       }
-      await firestore().collection('recipes').add(obj);
+      if (receita.id) {
+        await firestore().collection('recipes').doc(receita.id).update(obj);
+      } else {
+        const result = await firestore().collection('recipes').add(obj);
+        setReceita({ ...receita, id: result.id });
+      }
+
       Alert.alert("Salvar receita", "Receita salva com sucesso!");
     }
     catch (error) {
@@ -92,7 +101,7 @@ export default function Gerador() {
           <View style={styles.cardInsert}>
             <View style={styles.cardTitleView}>
               <Text style={styles.cardTitle}>Ingredientes</Text>
-              <Image source={require("../../../assets/ingredientes.png")} style={{ width: 36, height: 36 }} />
+              <Image source={require("../../../assets/livro-receita02.png")} style={{ width: 36, height: 36 }} />
             </View>
 
             <View style={styles.ingredientesView}>
@@ -150,6 +159,15 @@ export default function Gerador() {
                     receita.modoPreparo.map(item => <Text style={styles.ingredientesReceita}>{item}</Text>)
                   )
                 }
+                <Text style={styles.titleModo}>Rendimento</Text>
+                <Text style={styles.ingredientesReceita}>{receita.rendimento}</Text>
+
+                <Text style={styles.titleModo}>Tempo de preparo</Text>
+                <Text style={styles.ingredientesReceita}>{receita.tempoPreparo}</Text>
+
+                <Text style={styles.titleModo}>Categoria</Text>
+                <Text style={styles.ingredientesReceita}>{receita.categoria}</Text>
+
               </View>
             </View>
 

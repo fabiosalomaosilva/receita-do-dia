@@ -5,8 +5,12 @@ export interface Recipe {
     nome: string;
     ingredientes: string[];
     modoPreparo: string[];
+    categoria: string;
+    rendimento: string;
+    tempoPreparo: string;
     user?: User;
     createdAt?: Date;
+    image?: string;
 }
 
 

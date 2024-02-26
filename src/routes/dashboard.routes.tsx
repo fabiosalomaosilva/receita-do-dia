@@ -1,12 +1,17 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { FontAwesome6 } from "@expo/vector-icons";
 
 import Dashboard from "../pages/dashboard";
 import Gerador from "../pages/gerador";
 import Receitas from "../pages/receitas";
+import Receita from "../components/layout/receita";
+import Register from "../pages/register";
 
 const Tab = createBottomTabNavigator();
+const { Navigator, Screen } = createNativeStackNavigator();
 
 export function DashboardRoutes() {
   return (
@@ -47,3 +52,15 @@ export function DashboardRoutes() {
     </Tab.Navigator>
   );
 }
+
+export function AppDashboardRoutes() {
+  return (
+    <Navigator screenOptions={{ headerShown: false }}>
+      <Screen name="DashboardRoutes" component={DashboardRoutes} />
+      <Screen name="Receita" component={Receita} options={{headerShown: true}} />
+
+    </Navigator>
+  );
+}
+
+
