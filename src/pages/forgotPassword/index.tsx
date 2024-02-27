@@ -10,27 +10,27 @@ import {
 } from "react-native";
 import Input from "../../components/inputs/Input";
 import Button from "../../components/inputs/Button";
-import { salvarUsuario } from "../../services/firebaseService";
+import { esqueciSenha, salvarUsuario } from "../../services/firebaseService";
 import { LinkButton } from "../../components/inputs/LinkButton";
 
-export default function Register({ navigation }) {
+export default function ForgotPassword({ navigation }) {
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  async function handleRegisterGoogle() {
-    if (!email || !password || !name) return;
+  async function handleResetPassword() {
+    if (!email) return;
     setLoading(true);
 
     try {
-      await salvarUsuario(email, name, password);
+      await esqueciSenha(email);
       setLoading(false);
+      Alert.alert("Sucesso", "E-mail de recuperação de senha enviado com sucesso")
+
     }
     catch (error) {
       console.log(error)
       setLoading(false);
-      Alert.alert("Erro no login", error)
+      Alert.alert("Erro", "Não foi possível enviar o e-mail de recuperação de senha")
     }
   }
 
@@ -42,20 +42,12 @@ export default function Register({ navigation }) {
         resizeMode="contain"
         style={{ width: 350 }}
       />
+
       <View style={{ marginBottom: 10 }}>
         <Text style={{ fontSize: 20, color: "#d97700", fontFamily: 'Nunito_500Medium' }}>
-          Cadastre seu usário
+          Esqueci minha senha
         </Text>
       </View>
-      <Input
-        label="Nome completo"
-        keyType="default"
-        placeholder="seu@email.com"
-        autoCapitalize="words"
-        value={name}
-        onChangeText={(e) => setName(e)}
-      />
-
       <Input
         label="E-mail"
         keyType="email-address"
@@ -65,23 +57,14 @@ export default function Register({ navigation }) {
         onChangeText={(e) => setEmail(e)}
       />
 
-      <Input
-        label="Senha"
-        isPassword={true}
-        keyType="default"
-        autoCapitalize="none"
-        placeholder="********"
-        value={password}
-        onChangeText={(e) => setPassword(e)}
-      />
       <Button
         text="Salvar"
         color="primary"
         disabled={loading === true ? true : false}
-        onPress={handleRegisterGoogle}
+        onPress={handleResetPassword}
       />
       <LinkButton
-        style={{ marginTop: 45, width: '100%', marginBottom: 10}}
+        style={{ marginTop: 45, width: '100%', marginBottom: 10 }}
         onPress={() => navigation.navigate('Login')}
         title="Retornar ao Login" />
 
@@ -101,3 +84,4 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+

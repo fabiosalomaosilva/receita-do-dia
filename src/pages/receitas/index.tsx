@@ -35,33 +35,35 @@ export default function Receitas({ navigation }) {
 
   function handleOpenRecipe(receita: Recipe) {
     receita.user = null;
+    if(receita.createdAt === null || receita.createdAt === undefined) {
+      receita.createdAt = new Date()
+    }
     navigation.navigate('Receita', { receita });
   }
 
   return (
     <SafeAreaView style={styles.container}>
-            <View style={{marginTop: 40}}>
+      <View style={{ marginTop: 40 }}>
 
         <Header text="Minhas receitas" />
-        <View style={styles.cardInsert}>
-  <FlatList
+
+        <FlatList
           data={receitas}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <View key={item.id}>
               <TouchableOpacity onPress={() => handleOpenRecipe(item)}>
                 <View style={styles.btnItem}>
-                  <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria.replace(' ', '') + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
-                  <View style={{marginLeft: 10}}>
-                    <Text style={{ fontSize: 15 }}>{item.nome}</Text>
-                    <Text style={{ fontSize: 12 }}>{item.categoria}</Text>
+                    <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria.replace(' ', '') + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
+                    <View style={{ marginLeft: 10, marginRight: 10 }}>
+                      <Text lineBreakMode="tail" ellipsizeMode="tail" numberOfLines={1} style={{ fontSize: 15 }}>{item.nome}</Text>
+                      <Text style={{ fontSize: 12 }}>{item.categoria}</Text>
+                    </View>
                   </View>
-                </View>
               </TouchableOpacity>
             </View>
           )}
         />
-              </View>
-
       </View>
     </SafeAreaView>
   );
@@ -80,21 +82,16 @@ const styles = StyleSheet.create({
     color: "#475569",
   },
   btnItem: {
+    maxWidth: "99%",
     flex: 1,
+    backgroundColor: "#eaebed",
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
     gap: 10,
-    paddingTop: 7,
-    paddingBottom: 7,
+    padding: 7,
+    marginBottom: 5,
+    borderRadius: 10,
+    paddingRight: 9
   },
-  cardInsert: {
-    width: "100%",
-    minHeight: 100,
-    backgroundColor: "#eaebed",
-    flexDirection: "column",
-    padding: 12,
-    borderRadius: 15,
-    marginBottom: 15,
-},
 });

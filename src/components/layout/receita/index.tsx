@@ -23,6 +23,7 @@ export default function Receita({ route }) {
 
     useEffect(() => {
         setReceitaValue(receita);
+        console.log(receita?.createdAt);
         setShowButton(showButtonSave);
     }, []);
 

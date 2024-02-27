@@ -46,7 +46,11 @@ export default function Header(props: HeaderProps) {
             <Text style={styles.title}>{props.text}</Text>
           </View>
           <AvatarMenu onProfilePress={handleProfilePress} onLogoutPress={handleLogoutPress} >
-            <Avatar source={{ uri: user.photoURL }} />
+            {user.photoURL === null ? 
+            ( <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/avatar.png?alt=media" }} />) : 
+            (<Avatar source={{ uri: user.photoURL }} size="small" />)
+            }         
+            
           </AvatarMenu>
         </View>
       )}

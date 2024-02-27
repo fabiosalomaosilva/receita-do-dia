@@ -95,11 +95,17 @@ export default function Dashboard({ navigation }) {
 
   function handleOpenRecipe(receita: Recipe) {
     receita.user = null;
+    if(receita.createdAt === null || receita.createdAt === undefined) {
+      receita.createdAt = new Date()
+    }
     navigation.navigate('Receita', { receita, showButtonSave: false });
   }
 
   function handleOpenRecipeDay(receita: Recipe) {
     receita.user = null;
+    if(receita.createdAt === null || receita.createdAt === undefined) {
+      receita.createdAt = new Date()
+    }
     navigation.navigate('Receita', { receita, showButtonSave: true });
   }
 
@@ -133,8 +139,8 @@ export default function Dashboard({ navigation }) {
               <TouchableOpacity onPress={() => handleOpenRecipe(item)} key={item.id}>
                 <View style={styles.btnItem}>
                   <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria.replace(' ', '') + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
-                  <View style={{ marginLeft: 10 }}>
-                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, color: '#fff' }}>{item.nome}</Text>
+                  <View style={{ marginLeft: 10, marginRight:10 }}>
+                    <Text lineBreakMode="tail" numberOfLines={1} style={{ fontSize: 15, color: '#fff'}}>{item.nome}</Text>
                     <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{item.categoria}</Text>
                   </View>
                 </View>
@@ -150,7 +156,7 @@ export default function Dashboard({ navigation }) {
                   <View style={styles.btnItem}>
                     <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + receitaDia.categoria.replace(' ', '') + ".png?alt=media" }} size="medium" style={{ backgroundColor: '#c3c' }} />
                     <View style={{ marginLeft: 10 }}>
-                      <Text style={{ fontSize: 15, color: '#fff' }}>{receitaDia.nome}</Text>
+                      <Text lineBreakMode="tail" numberOfLines={1} style={{ fontSize: 15, color: '#fff' }}>{receitaDia.nome}</Text>
                       <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{receitaDia.categoria}</Text>
                     </View>
                   </View>
@@ -188,6 +194,7 @@ const styles = StyleSheet.create({
   },
   cardPrimary: {
     width: "100%",
+    maxWidth: "100%",
     minHeight: 100,
     backgroundColor: "#fdba74",
     flexDirection: "row",
@@ -198,6 +205,7 @@ const styles = StyleSheet.create({
   },
   cardRecipes: {
     width: "100%",
+    maxWidth: "100%",
     minHeight: 100,
     backgroundColor: "#34d399",
     flexDirection: "column",
@@ -211,6 +219,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   btnItem: {
+    maxWidth: "97%",
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'flex-start',

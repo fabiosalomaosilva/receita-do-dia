@@ -1,7 +1,9 @@
-import { Recipe } from "../models/Recipe";
 import { Alert } from "react-native";
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import auth from "@react-native-firebase/auth";
+
+import { Recipe } from "../models/Recipe";
 
 export async function salvarReceita(recipe: Recipe, idUser: string): Promise<boolean> {
   try {
@@ -16,7 +18,12 @@ export async function salvarReceita(recipe: Recipe, idUser: string): Promise<boo
       categoria: recipe.categoria,
       createdAt: firestore.FieldValue.serverTimestamp()
     }
-    await firestore().collection('recipes').doc(recipe.id).set(obj);
+    if (recipe.id.length === 8) {
+      await firestore().collection('recipes').doc(recipe.id + "-" + idUser).set(obj);
+    }
+    else {
+      await firestore().collection('recipes').doc(recipe.id).set(obj);
+    }
 
     const recipes = await AsyncStorage.getItem('recipes');
     if (recipes) {
@@ -131,4 +138,35 @@ export function getIdRecipe(): string {
 
   const dataFormatada = `${ano}${mes}${dia}`;
   return dataFormatada;
+}
+
+export async function salvarUsuario(email: string, nome: string, password: string, photoUrl?: string): Promise<boolean> {
+  try {
+    const obj = {
+      displayName: nome,
+      email: email,
+      photoUrl: photoUrl,
+    }
+    await auth().createUserWithEmailAndPassword(email, password)
+    await firestore().collection('users').doc(email).set(obj);
+    return true;
+  }
+  catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
+export async function esqueciSenha(email: string): Promise<boolean> {
+  try {
+    const obj = {
+      email: email,
+    }
+    await auth().sendPasswordResetEmail(email)
+    return true;
+  }
+  catch (error) {
+    console.log(error);
+    return false;
+  }
 }
