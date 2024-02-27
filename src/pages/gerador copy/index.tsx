@@ -24,7 +24,7 @@ import { User } from "../../models/User";
 export default function Gerador() {
   const [ingredientes, setIngredientes] = useState<string[]>([]);
   const [ingrediente, setIngrediente] = useState<string>("");
-  const [receita, setReceita] = useState<Recipe>(null);
+  const [receita, setReceita] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -60,7 +60,10 @@ export default function Gerador() {
 
   async function salvarReceita() {
     try {
-      const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
+      if(receita === null) return;
+      const userStorage = await AsyncStorage.getItem('user');
+      if(userStorage === null) return;
+      const userLogin = JSON.parse(userStorage) as User;
       const obj = {
         id: receita.id ?? null,
         nome: receita.nome,

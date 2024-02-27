@@ -8,7 +8,7 @@ import Dashboard from "../pages/dashboard";
 import Gerador from "../pages/gerador";
 import Receitas from "../pages/receitas";
 import Receita from "../components/layout/receita";
-import Register from "../pages/register";
+import RecipeByName from "../pages/recipeByName";
 
 const Tab = createBottomTabNavigator();
 const { Navigator, Screen } = createNativeStackNavigator();
@@ -34,6 +34,17 @@ export function DashboardRoutes() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
+            <FontAwesome6 name="lightbulb" color={color} size={size} />
+          ),
+        }}
+      />
+            <Tab.Screen
+        name="Busca"
+        component={RecipeByName}
+        options={{
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="bolt" color={color} size={size} />
           ),
         }}
@@ -45,7 +56,7 @@ export function DashboardRoutes() {
           headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome6 name="lightbulb" color={color} size={size} />
+            <FontAwesome6 name="list" color={color} size={size} />
           ),
         }}
       />

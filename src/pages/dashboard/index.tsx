@@ -1,148 +1,167 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, ScrollView, SafeAreaView, Image, Alert } from "react-native";
-import firestore, { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { View, StyleSheet, ScrollView, RefreshControl, SafeAreaView, Image, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Text } from "../../components/inputs/Text";
-import auth from "@react-native-firebase/auth";
-import Button from "../../components/inputs/Button";
 import Header from "../../components/layout/header";
 import { Recipe } from "../../models/Recipe";
 import { User } from "../../models/User";
 import Avatar from "../../components/layout/avatar";
-import { Timestamp } from "react-native-reanimated/lib/typescript/reanimated2/commonTypes";
 import { getReceitaDia } from "../../services/gptService";
+import { getRecipeDay, saveRecipeDay, getRecipesByUser, getIdRecipe } from "../../services/firebaseService";
 
 export default function Dashboard({ navigation }) {
   const [receitas, setReceitas] = useState<Recipe[]>([]);
   const [receitaDia, setReceitaDia] = useState<Recipe>();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    let subscribe;
-    AsyncStorage.getItem('user').then((userLogin) => {
+  async function createReceitaDia(): Promise<Recipe> {
+    try {
+      const receitaDiaNova = await getReceitaDia()
+      AsyncStorage.setItem('receitaDia', JSON.stringify(receitaDiaNova));
+      setReceitaDia(receitaDiaNova);
+      return receitaDiaNova;
+    } catch (error) {
+      console.log('Erro ao criar receita do dia', error)
+      return null;
+    }
+  }
 
-      const user = JSON.parse(userLogin) as User;
-      subscribe = firestore()
-        .collection('recipes')
-        .where('user', '==', firestore().collection('users').doc(user.id))
-        .orderBy('createdAt', 'desc')
-        .limit(3)
-        .get()
-        .then(querySnapshot => {
-          const data = querySnapshot.docs.map(doc => {
-            return {
-              id: doc.id,
-              image: doc.data().categoria !== undefined ? "../../../assets/" + doc.data().categoria + ".png" : "../../../assets/outros.png",
-              ...doc.data()
-            } as Recipe;
-          })
-          setReceitas(data)
-        }).catch(error => console.log(error));
-    });
-    return () => subscribe();
-  }, []);
+  async function getRecipeDayOrGenerate() {
+    let recipeDayString = await AsyncStorage.getItem('receitaDia');
+    if (!recipeDayString) {
+      await recipeNotpeExistsInStorage()
+    }
+    else {
+      await recipeExistsInStorage(recipeDayString);
+    }
+  }
 
-  useEffect(() => {
-    AsyncStorage.getItem('receitaDia').then((receita) => {
-      if(receita === null) {
-        console.log('Não há receita do dia salva');
-        createReceitaDia();
+  async function recipeNotpeExistsInStorage() {
+    try {
+      let recipeDay = await getRecipeDay();
+      if (!recipeDay) {
+        recipeDay = await createReceitaDia();
+        setReceitaDia(recipeDay);
+        saveRecipeDay(recipeDay);
         return;
       }
-      const data = JSON.parse(receita);
-      data.createdAt = data.createdAt.toDate();
-      setReceitaDia(data as Recipe);
-    });
+      else {
+        setReceitaDia(recipeDay);
+      }
+    } catch (error) {
+      console.log('Erro ao criar receita do dia', error)
+    }
 
-  }, []);
-
-
-  async function createReceitaDia() {
-    const receitaDiaNova =  await getReceitaDia()
-    AsyncStorage.setItem('receitaDia', JSON.stringify(receitaDiaNova));
-    setReceitaDia(receitaDiaNova);
-    salvarReceita(receitaDiaNova);
   }
 
-  async function salvarReceita(recipe: Recipe) {
+  async function recipeExistsInStorage(recipeString: string) {
     try {
-      const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
-      const obj = {
-        id: recipe.id ?? null,
-        nome: recipe.nome,
-        user: firestore().collection('users').doc(userLogin.id),
-        ingredientes: recipe.ingredientes,
-        modoPreparo: recipe.modoPreparo,
-        rendimento: recipe.rendimento,
-        tempoPreparo: recipe.tempoPreparo,
-        categoria: recipe.categoria,
-        createdAt: firestore.FieldValue.serverTimestamp()
+      let recipeDay = JSON.parse(recipeString);
+      if (recipeDay.id !== getIdRecipe()) {
+        recipeDay = await createReceitaDia();
+        setReceitaDia(recipeDay);
+        saveRecipeDay(recipeDay);
       }
-      if (recipe.id) {
-        await firestore().collection('recipeDay').doc(recipe.id).update(obj);
-      } else {
-        const result = await firestore().collection('recipeDay').add(obj);
+      else {
+        setReceitaDia(recipeDay);
       }
-      Alert.alert("Salvar receita", "Receita salva com sucesso!");
-    }
-    catch (error) {
-      Alert.alert("Salvar receita", "Ocorreu um erro ao salvar a receita. Tente novamente.");
+    } catch (error) {
+      console.log('Erro ao criar receita do dia', error)
     }
   }
 
-  function timestampToDate(timestamp: FirebaseFirestoreTypes.Timestamp): Date {
-    return new Date(timestamp.seconds * 1000);
+  async function getRecipes() {
+    try {
+      setLoading(true);
+      const userStorage = await AsyncStorage.getItem('user');
+      if (userStorage) {
+        const user = JSON.parse(userStorage) as User;
+        const data = await getRecipesByUser(user.id);
+        if (data !== null) {
+          setReceitas(data);
+        }
+      }
+      else {
+        console.log('Usuário não encontrado')
+      }
+      setLoading(false);
+
+    } catch (error) {
+      setLoading(false);
+      console.log('Erro ao criar receita do dia', error)
+    }
   }
 
-  function handleLogout() {
-    auth().signOut();
-  }
   function handleOpenRecipe(receita: Recipe) {
     receita.user = null;
-    navigation.navigate('Receita', { receita });
+    navigation.navigate('Receita', { receita, showButtonSave: false });
   }
+
+  function handleOpenRecipeDay(receita: Recipe) {
+    receita.user = null;
+    navigation.navigate('Receita', { receita, showButtonSave: true });
+  }
+
+  useEffect(() => {
+    getRecipes();
+    getRecipeDayOrGenerate();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ marginTop: 40 }}
+      >
         <Header text="Dashboard" />
-        <Text style={styles.title}>Olá, Fábio</Text>
 
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text style={styles.cardTitle}>Receitas</Text>
-          <Image source={require("../../../assets/ingredientes.png")} style={{ width: 40, height: 40 }} />
-        </View>
+        <RefreshControl
+          refreshing={loading}
+          onRefresh={getRecipes}
+          colors={['#ff8735', '#ff8735']}>
+          <Text style={styles.title}>Olá, Fábio</Text>
 
-        <View style={styles.cardRecipes}>
-          <Text style={styles.cardText}>Últimas receitas</Text>
-          {receitas && receitas.map((item) => (
-            <View style={styles.btnItem} key={item.id}>
-              <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
-              <View style={{ marginLeft: 10 }}>
-                <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, color: '#fff' }}>{item.nome}</Text>
-                <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{item.categoria}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={styles.cardTitle}>Receitas</Text>
+            <Image source={require("../../../assets/prato02.png")} style={{ width: 42, height: 42 }} />
+          </View>
 
-        <View style={styles.cardPrimary}>
-          {receitaDia ? (
-            <View>
-              <Text style={styles.cardText}>Receita do dia!</Text>
-              <View style={styles.btnItem}>
-                <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + receitaDia.categoria + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
-                <View style={{ marginLeft: 10 }}>
-                  <Text style={{ fontSize: 15, color: '#fff' }}>{receitaDia.nome}</Text>
-                  <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{receitaDia.categoria}</Text>
+          <View style={styles.cardRecipes}>
+            <Text style={styles.cardText}>Últimas receitas</Text>
+            {receitas && receitas.map((item) => (
+              <TouchableOpacity onPress={() => handleOpenRecipe(item)} key={item.id}>
+                <View style={styles.btnItem}>
+                  <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria.replace(' ', '') + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
+                  <View style={{ marginLeft: 10 }}>
+                    <Text numberOfLines={1} ellipsizeMode="tail" style={{ fontSize: 15, color: '#fff' }}>{item.nome}</Text>
+                    <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{item.categoria}</Text>
+                  </View>
                 </View>
-              </View>
-            </View>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-          ) : (
-            <Text style={styles.cardText}>Nenhuma receita do dia retornada</Text>
-          )}
-        </View>
+          <View style={styles.cardPrimary}>
+            {receitaDia ? (
+              <View>
+                <Text style={styles.cardText}>Receita do dia!</Text>
+                <TouchableOpacity onPress={() => handleOpenRecipeDay(receitaDia)}>
+                  <View style={styles.btnItem}>
+                    <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + receitaDia.categoria.replace(' ', '') + ".png?alt=media" }} size="medium" style={{ backgroundColor: '#c3c' }} />
+                    <View style={{ marginLeft: 10 }}>
+                      <Text style={{ fontSize: 15, color: '#fff' }}>{receitaDia.nome}</Text>
+                      <Text style={{ fontSize: 12, color: '#f0f0f0' }}>{receitaDia.categoria}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
+            ) : (
+              <Text style={styles.cardText}>Nenhuma receita do dia retornada</Text>
+            )}
+          </View>
+        </RefreshControl>
       </ScrollView>
     </SafeAreaView>
   );
@@ -201,5 +220,5 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     color: '#fff',
   },
-  titleItem: { fontSize: 15, color: '#fff'},
+  titleItem: { fontSize: 15, color: '#fff' },
 });

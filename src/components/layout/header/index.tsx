@@ -1,16 +1,15 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { useEffect, useState } from "react";
-import { View, StyleSheet, Image, ActivityIndicator, Alert } from "react-native";
+import { View, StyleSheet, Image, ActivityIndicator, Alert, ViewProps } from "react-native";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import auth from "@react-native-firebase/auth";
 import { FontAwesome6, SimpleLineIcons } from "@expo/vector-icons";
-import Button from "../../inputs/Button";
 import { Text } from "../../inputs/Text";
 import Avatar from "../avatar";
 import AvatarMenu from "../avatarMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export interface HeaderProps {
+export interface HeaderProps extends ViewProps {
   text: string;
 }
 

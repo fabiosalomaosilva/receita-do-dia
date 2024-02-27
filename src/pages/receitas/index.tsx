@@ -23,7 +23,6 @@ export default function Receitas({ navigation }) {
           const data = querySnapshot.docs.map(doc => {
             return {
               id: doc.id,
-              image: doc.data().categoria !== undefined ? "../../../assets/" + doc.data().categoria + ".png" : "../../../assets/outros.png",
               ...doc.data()
             } as Recipe;
           })
@@ -51,7 +50,7 @@ export default function Receitas({ navigation }) {
             <View key={item.id}>
               <TouchableOpacity onPress={() => handleOpenRecipe(item)}>
                 <View style={styles.btnItem}>
-                  <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
+                  <Avatar source={{ uri: "https://firebasestorage.googleapis.com/v0/b/receita-dia.appspot.com/o/" + item.categoria.replace(' ', '') + ".png?alt=media" }} size="small" style={{ backgroundColor: '#c3c' }} />
                   <View style={{marginLeft: 10}}>
                     <Text style={{ fontSize: 15 }}>{item.nome}</Text>
                     <Text style={{ fontSize: 12 }}>{item.categoria}</Text>

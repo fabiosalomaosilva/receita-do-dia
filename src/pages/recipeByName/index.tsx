@@ -10,20 +10,18 @@ import {
   Alert
 } from "react-native";
 import { Text } from "../../components/inputs/Text";
-import { getReceita } from "../../services/gptService";
+import { getRecipeByName } from "../../services/gptService";
 import Input from "../../components/inputs/Input";
 import Button from "../../components/inputs/Button";
 import { Ionicons } from "@expo/vector-icons";
 import Header from "../../components/layout/header";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { Recipe } from "../../models/Recipe";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import firestore from '@react-native-firebase/firestore';
 import { User } from "../../models/User";
+import { salvarReceita } from "../../services/firebaseService";
 
-export default function Gerador() {
-  const [ingredientes, setIngredientes] = useState<string[]>([]);
-  const [ingrediente, setIngrediente] = useState<string>("");
+export default function RecipeByName() {
+  const [nomeReceita, setNomeReceita] = useState<string>("");
   const [receita, setReceita] = useState<Recipe>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -31,56 +29,19 @@ export default function Gerador() {
     AsyncStorage.getItem('user').then((userLogin) => { console.log(userLogin) });
   }, []);
 
-  function addIngrediente() {
-    if (ingrediente === "") return;
-    Keyboard.dismiss();
-
-    setIngredientes([...ingredientes, ingrediente]);
-    setIngrediente("");
-  }
-
-  const removerIngrediente = (nome: string) => {
-    const novosIngredientes = ingredientes.filter(ingrediente => ingrediente !== nome);
-    setIngredientes(novosIngredientes);
-  }
-
-  function excluirTudo() {
-    setIngredientes([]);
-    setReceita(null);
-  }
-
   const createRecipe = async () => {
     setLoading(true);
     setReceita(null);
     Keyboard.dismiss();
-    const result = await getReceita(ingredientes);
+    const result = await getRecipeByName(nomeReceita);
     setReceita(result);
     setLoading(false);
   };
 
-  async function salvarReceita() {
+  async function salvarReceitaBd() {
     try {
       const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
-      const obj = {
-        id: receita.id ?? null,
-        nome: receita.nome,
-        user: firestore().collection('users').doc(userLogin.id),
-        ingredientes: receita.ingredientes,
-        modoPreparo: receita.modoPreparo,
-        rendimento: receita.rendimento,
-        tempoPreparo: receita.tempoPreparo,
-        categoria: receita.categoria,
-        createdAt: firestore.FieldValue.serverTimestamp()
-      }
-      console.log('Vai salavr receita')
-      console.log(obj)
-      if (receita.id) {
-        await firestore().collection('recipes').doc(receita.id).update(obj);
-      } else {
-        const result = await firestore().collection('recipes').add(obj);
-        setReceita({ ...receita, id: result.id });
-      }
-
+      await salvarReceita(receita, userLogin.id);
       Alert.alert("Salvar receita", "Receita salva com sucesso!");
     }
     catch (error) {
@@ -94,49 +55,11 @@ export default function Gerador() {
         <Header text="Criar receita" />
 
         <View style={styles.cardInsert}>
-          <Text style={styles.cardText}>O que tenho em casa?</Text>
-          <Input value={ingrediente} onChangeText={setIngrediente} placeholder="ex: alcatra em bifes" />
-          <Button text="Adicionar" onPress={addIngrediente} color="primary" />
+          <Text style={styles.cardText}>Nome da receita</Text>
+          <Input value={nomeReceita} onChangeText={setNomeReceita} placeholder="ex: frango a xadrez" />
+          <Button text="Ver Receita" onPress={createRecipe} color="primary" />
         </View>
 
-        {ingredientes.length > 0 && (
-          <View style={styles.cardInsert}>
-            <View style={styles.cardTitleView}>
-              <Text style={styles.cardTitle}>Ingredientes</Text>
-              <Image source={require("../../../assets/livro-receita02.png")} style={{ width: 36, height: 36 }} />
-            </View>
-
-            <View style={styles.ingredientesView}>
-              {ingredientes &&
-                ingredientes.map((ingrediente, index) => (
-                  <View style={{ flexDirection: 'row', marginTop: 5, marginBottom: 5, justifyContent: 'space-between' }} key={index}>
-                    <View style={{ flexDirection: 'row', gap: 10 }}>
-                      <Ionicons name="checkbox" size={22} color="#f59e0b" />
-                      <Text
-                        key={index}
-                        fontSize="14"
-                        color="#c3c3c3"
-                        fontWeight="500"
-                      >
-                        {ingrediente}
-                      </Text>
-                    </View>
-                    <TouchableOpacity activeOpacity={0.6} onPress={() => removerIngrediente(ingrediente)}>
-                      <Ionicons name="trash" size={18} color="#ff8735" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
-            </View>
-
-            <Button
-              color="primary"
-              onPress={createRecipe}
-              icon={<Ionicons name="search-sharp" size={18} color="#fff" />}
-              iconPosition="left"
-              text="Criar Receita"
-            />
-          </View>
-        )}
 
         {receita ? (
           <View>
@@ -174,8 +97,7 @@ export default function Gerador() {
             </View>
 
             <View style={{ gap: 10, marginTop: 5, marginBottom: 5, justifyContent: 'space-between' }}>
-              <Button text="Salvar" color={"secondary"} onPress={salvarReceita} icon={<Ionicons name="save" color="#f5f5f5" size={18} />} iconPosition="left" />
-              <Button text="Nova receita" color={"danger"} onPress={excluirTudo} icon={<Ionicons name="add" color="#f5f5f5" size={18} />} iconPosition="left" />
+              <Button text="Salvar" color={"secondary"} onPress={salvarReceitaBd} icon={<Ionicons name="save" color="#f5f5f5" size={18} />} iconPosition="left" />
             </View>
           </View>
 

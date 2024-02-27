@@ -1,5 +1,11 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView } from 'react-native'
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert, ActivityIndicator } from 'react-native'
 import { Recipe } from '../../../models/Recipe';
+import Button from '../../inputs/Button';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { getRecipeDay, salvarReceita } from '../../../services/firebaseService';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User } from '../../../models/User';
 
 interface ReceitaProps {
     route: {
@@ -10,35 +16,67 @@ interface ReceitaProps {
 }
 
 export default function Receita({ route }) {
-    //console.log(JSON.parse(route.params).nome)
+    const [receitaValue, setReceitaValue] = useState<Recipe>(null);
+    const [showButton, setShowButton] = useState<boolean>(false);
     const { receita } = route.params;
+    const { showButtonSave } = route.params;
+
+    useEffect(() => {
+        setReceitaValue(receita);
+        setShowButton(showButtonSave);
+    }, []);
+
+    async function salvarReceitaDb(recipe: Recipe) {
+        const userLogin = JSON.parse(await AsyncStorage.getItem('user')) as User;
+        console.log(recipe)
+
+        const result = await salvarReceita(recipe, userLogin.id);
+        if (result) {
+            const recipeDay = await getRecipeDay();
+            setReceitaValue(recipeDay);
+            Alert.alert("Salvar receita", "Receita salva com sucesso!");
+        }
+        else {
+            Alert.alert("Salvar receita", "Ocorreu um erro ao salvar a receita. Tente novamente.");
+        }
+    }
 
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 20 }}>
-            <View style={styles.cardInsert}>
-                <Text style={styles.nomeReceita}>{receita.nome}</Text>
-                <Text style={styles.titleModo}>Ingredientes</Text>
-                {
-                    receita.ingredientes && (
-                        receita.ingredientes.map(item => <Text style={styles.ingredientesReceita}>{item}</Text>)
-                    )
-                }
-                <Text style={styles.titleModo}>Modo de preparo</Text>
-                {
-                    receita.modoPreparo && (
-                        receita.modoPreparo.map(item => <Text style={styles.ingredientesReceita}>{item}</Text>)
-                    )
-                }
-                              <Text style={styles.titleModo}>Rendimento</Text>
-              <Text style={styles.ingredientesReceita}>{receita.rendimento}</Text>
+                {receitaValue !== null ? (
+                    <View style={styles.cardInsert}>
+                        <Text style={styles.nomeReceita}>{receitaValue.nome}</Text>
+                        <Text style={styles.titleModo}>Ingredientes</Text>
+                        {
+                            receitaValue.ingredientes && (
+                                receitaValue.ingredientes.map((item, index) => <Text style={styles.ingredientesReceita} key={index}>{item}</Text>)
+                            )
+                        }
+                        <Text style={styles.titleModo}>Modo de preparo</Text>
+                        {
+                            receitaValue.modoPreparo && (
+                                receitaValue.modoPreparo.map((item, index) => <Text style={styles.ingredientesReceita} key={index}>{item}</Text>)
+                            )
+                        }
+                        <Text style={styles.titleModo}>Rendimento</Text>
+                        <Text style={styles.ingredientesReceita}>{receitaValue.rendimento}</Text>
 
-              <Text style={styles.titleModo}>Tempo de preparo</Text>
-              <Text style={styles.ingredientesReceita}>{receita.tempoPreparo}</Text>
-              
-              <Text style={styles.titleModo}>Categoria</Text>
-              <Text style={styles.ingredientesReceita}>{receita.categoria}</Text>
+                        <Text style={styles.titleModo}>Tempo de preparo</Text>
+                        <Text style={styles.ingredientesReceita}>{receitaValue.tempoPreparo}</Text>
+
+                        <Text style={styles.titleModo}>Categoria</Text>
+                        <Text style={styles.ingredientesReceita}>{receitaValue.categoria}</Text>
+                    </View>
+
+                ) : (
+                    <ActivityIndicator color="#d97706" style={{ marginTop: 80 }} />
+                )}
+                {showButton && (
+                <View style={{ gap: 10, marginTop: 5, marginBottom: 5, justifyContent: 'space-between' }}>
+                    <Button text="Salvar" color={"secondary"} onPress={() => salvarReceitaDb(receitaValue)} icon={<Ionicons name="save" color="#f5f5f5" size={18} />} iconPosition="left" />
                 </View>
+                )}
             </ScrollView>
         </SafeAreaView>
     );
@@ -51,7 +89,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         alignItems: 'flex-start'
-      },
+    },
     title: {
         fontSize: 24,
         fontFamily: "Nunito_700Bold",
