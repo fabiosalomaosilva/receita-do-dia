@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "receita-do-dia",
+    "name": "Receita do dia",
     "slug": "receita-do-dia",
     "version": "1.0.0",
     "scheme": "receitadodia",
@@ -8,6 +8,12 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFCFB1"
+    },
     "android": {
       "googleServicesFile": "./android/app/google-services.json",
       "package": "com.receitadodia"

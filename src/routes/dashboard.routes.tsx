@@ -25,6 +25,7 @@ export function DashboardRoutes() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="signs-post" color={color} size={size} />
           ),
+          tabBarActiveTintColor: "#ff8735",
         }}
       />
       <Tab.Screen
@@ -36,9 +37,10 @@ export function DashboardRoutes() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="lightbulb" color={color} size={size} />
           ),
+          tabBarActiveTintColor: "#ff8735",
         }}
       />
-            <Tab.Screen
+      <Tab.Screen
         name="Busca"
         component={RecipeByName}
         options={{
@@ -47,6 +49,7 @@ export function DashboardRoutes() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="bolt" color={color} size={size} />
           ),
+          tabBarActiveTintColor: "#ff8735",
         }}
       />
       <Tab.Screen
@@ -58,6 +61,7 @@ export function DashboardRoutes() {
           tabBarIcon: ({ color, size }) => (
             <FontAwesome6 name="list" color={color} size={size} />
           ),
+          tabBarActiveTintColor: "#ff8735",          
         }}
       />
     </Tab.Navigator>
@@ -68,7 +72,7 @@ export function AppDashboardRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: false }}>
       <Screen name="DashboardRoutes" component={DashboardRoutes} />
-      <Screen name="Receita" component={Receita} options={{headerShown: true}} />
+      <Screen name="Receita" component={Receita} options={{ headerShown: true }} />
 
     </Navigator>
   );
