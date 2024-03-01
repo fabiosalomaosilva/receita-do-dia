@@ -21,6 +21,9 @@ export async function salvarReceita(recipe: Recipe, idUser: string): Promise<boo
     if (recipe.id.length === 8) {
       await firestore().collection('recipes').doc(recipe.id + "-" + idUser).set(obj);
     }
+    if (recipe.id === null) {
+      await firestore().collection('recipes').add(obj);
+    }
     else {
       await firestore().collection('recipes').doc(recipe.id).set(obj);
     }

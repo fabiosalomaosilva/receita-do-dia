@@ -91,7 +91,7 @@ export default function Gerador() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
-        <Header text="Criar receita" />
+        <Header text="Criar nova receita" />
 
         <View style={styles.cardInsert}>
           <Text style={styles.cardText}>O que tenho em casa?</Text>

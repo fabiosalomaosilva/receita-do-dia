@@ -52,7 +52,7 @@ export default function RecipeByName() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false} style={{ marginTop: 40 }}>
-        <Header text="Criar receita" />
+        <Header text="Pesquisar receita" />
 
         <View style={styles.cardInsert}>
           <Text style={styles.cardText}>Nome da receita</Text>
