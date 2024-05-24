@@ -2,6 +2,11 @@
 
 Aplicativo desenvolvido com React Native e a API do ChatGPT, que cria receitas a partir dos ingredientes disponíveis na sua casa. Além disso, o aplicativo gera receitas de pratos conhecidos pelo nome, mas que você não sabe como preparar, fornecendo os ingredientes e os passos necessários.
 
+![image](https://github.com/fabiosalomaosilva/receita-do-dia/assets/8368248/738ee4eb-6a30-4e00-9a06-1b30202fc66b)
+![image](https://github.com/fabiosalomaosilva/receita-do-dia/assets/8368248/858a329a-55c9-48ae-a0fc-afd1d17d63e2)
+![image](https://github.com/fabiosalomaosilva/receita-do-dia/assets/8368248/4be56c1e-b21b-42f7-82af-68e5c0dc796b)
+
+
 ## Tecnologias Utilizadas
 
 - React Native
