@@ -1,7 +1,3 @@
-Claro! Aqui está um exemplo de README.md para o seu projeto no GitHub:
-
----
-
 # Receita do Dia
 
 Aplicativo desenvolvido com React Native e a API do ChatGPT, que cria receitas a partir dos ingredientes disponíveis na sua casa. Além disso, o aplicativo gera receitas de pratos conhecidos pelo nome, mas que você não sabe como preparar, fornecendo os ingredientes e os passos necessários.
